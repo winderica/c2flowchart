@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>c2flowchart</title>
     <script src="lib/raphael.min.js"></script>
     <script src="lib/flowchart.min.js"></script>
 </head>
@@ -15,8 +15,15 @@
         const listener = () => {
             const div = document.querySelector('#diagram');
             div.firstChild && div.removeChild(div.firstChild);
-            const diagram = flowchart.parse(flowchartCodeArea.value);
-            diagram.drawSVG('diagram');
+            try {
+                flowchartCodeArea.style.color = '#000000';
+                const diagram = flowchart.parse(flowchartCodeArea.value);
+                diagram.drawSVG('diagram');
+            } catch (e) {
+                flowchartCodeArea.value = e;
+                flowchartCodeArea.style.color = '#cc0000';
+                div.removeChild(div.firstChild);
+            }
         };
         cCodeArea.addEventListener('input', listener);
         flowchartCodeArea.addEventListener('input', listener);

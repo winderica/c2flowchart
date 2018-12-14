@@ -1,54 +1,13 @@
 start=>start: 开始
 end=>end: 结束
-node_1=>operation: int i = 0
-node_0=>condition: i < width?
-node_3=>operation: int i = 0
-node_2=>condition: i < width?
-node_5=>operation: int i = 0
-node_4=>condition: i < width?
-node_7=>operation: int i = 0
-node_6=>condition: i < width?
-node_8=>operation: i++
-node_10=>operation: int i = 0
-node_9=>condition: i < width?
-node_11=>condition: 234?
-node_12=>operation: i++
-node_13=>operation: b = 2
-node_14=>operation: i++
-node_15=>operation: b = 3
-node_16=>operation: b = 5
-node_18=>operation: int i = 0
-node_17=>condition: i < width?
-node_19=>condition: 123?
-node_20=>operation: i++
-node_21=>operation: b = 8
-node_22=>operation: i++
-node_23=>operation: b = 9
-node_25=>operation: int i = 0
-node_24=>condition: i < width?
-node_26=>condition: 324?
-node_27=>operation: i++
-node_28=>operation: b = 21
-node_29=>operation: i++
-node_30=>operation: a = 1
-start->node_1->node_0->end
-node_0(no)->end
-node_0(yes)->node_3->node_2->node_5->node_4->node_7->node_6->node_8->node_0
-node_6(no)->node_8
-node_6(yes)->node_25->node_24->node_26->node_27->node_6
-node_26(no)->node_27
-node_26(yes)->node_30->node_27
-node_24(no)->node_26
-node_24(yes)->node_28->node_29->node_24
-node_4(no)->node_7
-node_4(yes)->node_18->node_17->node_19->node_20->node_4
-node_19(no)->node_20
-node_19(yes)->node_23->node_19
-node_17(no)->node_19
-node_17(yes)->node_21->node_22->node_17
-node_2(no)->node_5
-node_2(yes)->node_10->node_9->node_11->node_12->node_2
-node_11(no)->node_16->node_12
-node_11(yes)->node_15->node_12
-node_9(no)->node_11
-node_9(yes)->node_13->node_14->node_9
+node_0=>condition: node == NULL || (node->leftChild && node->leftChild->data.key == key) || (node->rightChild && node->rightChild->data.key == key)?
+node_1=>operation: TreeNode *parent = getParentHelper(node->leftChild, key)
+node_2=>condition: parent == NULL?
+node_3=>end: return parent
+node_4=>end: return node
+node_5=>operation: parent = getParentHelper(node->rightChild, key)
+start->node_0->node_1->node_2->node_3
+node_2(no)->node_3
+node_2(yes)->node_5->node_3
+node_0(no)->node_1
+node_0(yes)->node_4

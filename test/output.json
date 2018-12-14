@@ -3,97 +3,21 @@
     "statements": [
       {
         "statements": [
-          {
-            "statements": [
-              "b = 2"
-            ],
-            "type": "for",
-            "expression": {
-              "initialization": "int i = 0",
-              "condition": "i < width",
-              "increment": "i++"
-            }
-          },
-          {
-            "statements": [
-              "b = 3"
-            ],
-            "type": "if",
-            "expression": "234",
-            "elseStatements": [
-              "b = 5"
-            ]
-          }
+          "return node"
         ],
-        "type": "for",
-        "expression": {
-          "initialization": "int i = 0",
-          "condition": "i < width",
-          "increment": "i++"
-        }
+        "type": "if",
+        "expression": "node == NULL || (node->leftChild && node->leftChild->data.key == key) || (node->rightChild && node->rightChild->data.key == key)"
       },
+      "TreeNode *parent = getParentHelper(node->leftChild, key)",
       {
         "statements": [
-          {
-            "statements": [
-              "b = 8"
-            ],
-            "type": "for",
-            "expression": {
-              "initialization": "int i = 0",
-              "condition": "i < width",
-              "increment": "i++"
-            }
-          },
-          {
-            "statements": [
-              "b = 9"
-            ],
-            "type": "while",
-            "expression": "123"
-          }
+          "parent = getParentHelper(node->rightChild, key)"
         ],
-        "type": "for",
-        "expression": {
-          "initialization": "int i = 0",
-          "condition": "i < width",
-          "increment": "i++"
-        }
+        "type": "if",
+        "expression": "parent == NULL"
       },
-      {
-        "statements": [
-          {
-            "statements": [
-              "b = 21"
-            ],
-            "type": "for",
-            "expression": {
-              "initialization": "int i = 0",
-              "condition": "i < width",
-              "increment": "i++"
-            }
-          },
-          {
-            "statements": [
-              "a = 1"
-            ],
-            "type": "if",
-            "expression": "324"
-          }
-        ],
-        "type": "for",
-        "expression": {
-          "initialization": "int i = 0",
-          "condition": "i < width",
-          "increment": "i++"
-        }
-      }
+      "return parent"
     ],
-    "type": "for",
-    "expression": {
-      "initialization": "int i = 0",
-      "condition": "i < width",
-      "increment": "i++"
-    }
+    "type": "block"
   }
 ]

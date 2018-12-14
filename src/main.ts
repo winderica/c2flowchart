@@ -201,7 +201,7 @@ const parser = (str: string, start: number) => {
             }
             if (str[i] === '{') {
                 const end = findNext('}', i + 1);
-                statements.push(new BlockStatement(parser(str.slice(i + 1, end), 0)));
+                statements.push(...parser(str.slice(i + 1, end), 0));
                 i = end + 1;
                 prev = i;
             }
@@ -278,6 +278,12 @@ const parser = (str: string, start: number) => {
     return lexer(str, start);
 };
 
+interface LaterItem {
+    name: string;
+    start: string;
+    statements: Array<Block | Statement>;
+}
+
 const generateCode = (statements) => {
     const indexGenerator = (function* () {
         let i = 0;
@@ -290,39 +296,33 @@ const generateCode = (statements) => {
     const nodes = [`start=>start: 开始`, `end=>end: 结束`];
     const allSteps = [];
 
-    const flow = (statements: Array<Block | Statement>, start: string, end?: string) => {
-        const steps = [start];
-        const queue = [];
+    const flow = (statements: Array<Block | Statement>, start?: string, end?: string) => {
+        const steps = [];
+        start && steps.push(start);
+        const doLaterQueue: LaterItem[] = [];
         let shouldReturn = false;
         for (const i of statements) {
             if (i instanceof BlockStatement) {
                 if (i instanceof IfStatement) {
                     const name = `node_${indexGenerator.next().value}`;
                     nodes.push(`${name}=>condition: ${i.expression}?`);
-                    queue.push(() => {
-                        flow(i.statements, `${name}(yes)`, steps[steps.indexOf(name) + 1]);
+                    doLaterQueue.push({
+                        statements: i.statements,
+                        start: `${name}(yes)`,
+                        name: name
+                    }, {
+                        statements: i.elseStatements || [],
+                        start: `${name}(no)`,
+                        name: name
                     });
-                    if (i.elseStatements) {
-                        queue.push(() => {
-                            flow(i.elseStatements, `${name}(no)`, steps[steps.indexOf(name) + 1]);
-                        });
-                    } else {
-                        queue.push(() => {
-                            flow([], `${name}(no)`, steps[steps.indexOf(name) + 1]);
-                        });
-                    }
                     steps.push(name);
-                }
-                if (i instanceof WhileStatement) {
+                } else if (i instanceof WhileStatement) {
                     const name = `node_${indexGenerator.next().value}`;
                     nodes.push(`${name}=>condition: ${i.expression || true}?`);
-                    queue.push(() => {
-                        flow(i.statements, `${name}(yes)`, name);
-                        flow([], `${name}(no)`, steps[steps.indexOf(name) + 1])
-                    });
+                    allSteps.unshift(flow(i.statements, `${name}(yes)`, name));
+                    doLaterQueue.push({ statements: [], start: `${name}(no)`, name: name });
                     steps.push(name);
-                }
-                if (i instanceof ForStatement) {
+                } else if (i instanceof ForStatement) {
                     const nodeName = `node_${indexGenerator.next().value}`;
                     const initialName = `node_${indexGenerator.next().value}`;
                     const { initialization, condition, increment } = i.expression;
@@ -334,12 +334,13 @@ const generateCode = (statements) => {
                         i.statements.push(increment);
                     }
                     nodes.push(`${nodeName}=>condition: ${condition || true}?`);
-                    queue.push(() => {
-                        flow(i.statements, `${nodeName}(yes)`, nodeName);
-                        flow([], `${nodeName}(no)`, steps[steps.indexOf(nodeName) + 1])
-                    });
+                    allSteps.unshift(flow(i.statements, `${nodeName}(yes)`, nodeName));
+                    doLaterQueue.push({ statements: [], start: `${nodeName}(no)`, name: nodeName });
                     steps.push(nodeName);
                 }
+                // else {
+                //     steps.push(...flow(i.statements));
+                // }
             } else if (typeof i === 'string') {
                 const name = `node_${indexGenerator.next().value}`;
                 if (i.match(/^return\s*/)) {
@@ -358,11 +359,13 @@ const generateCode = (statements) => {
             }
         }
 
-        !shouldReturn && steps.push(end);
-        queue.map(i => i());
-        allSteps.unshift(steps);
+        !shouldReturn && end && steps.push(end);
+        doLaterQueue.forEach(({ statements, start, name }) => {
+            allSteps.unshift(flow(statements, start, steps[steps.indexOf(name) + 1]))
+        });
+        return steps;
     };
-    flow(statements, `start`, `end`);
+    allSteps.unshift(flow(statements, `start`, `end`));
     return `${nodes.join('\n')}\n${allSteps.map(i => i.join('->')).join('\n')}`;
 };
 
