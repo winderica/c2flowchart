@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>c2flowchart</title>
     <script src="lib/raphael.min.js"></script>
-    <script src="lib/flowchart.min.js"></script>
+    <script src="lib/flowchart_makai.min.js"></script>
 </head>
 <body>
     <textarea id="c-code" placeholder="c code here" rows="25" cols="100"></textarea>
@@ -20,7 +20,6 @@
                 const diagram = flowchart.parse(flowchartCodeArea.value);
                 diagram.drawSVG('diagram');
             } catch (e) {
-                flowchartCodeArea.value = e;
                 flowchartCodeArea.style.color = '#cc0000';
                 div.removeChild(div.firstChild);
             }
