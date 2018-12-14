@@ -1,5 +1,3 @@
-// const fs = require('fs');
-
 type Statement = string;
 
 interface Block {
@@ -154,7 +152,7 @@ const parser = (str: string, start: number) => {
                 } else if (str[index] === '{') {
                     index = findNext('}', index + 1) + 1;
                 } else if (str[index] === '(') {
-                    index = findNext( ')', index + 1) + 1;
+                    index = findNext(')', index + 1) + 1;
                 } else if (str[index] === '[') {
                     index = findNext(']', index + 1) + 1;
                 } else if (!str[index]) {
@@ -281,7 +279,7 @@ const parser = (str: string, start: number) => {
 };
 
 const generateCode = (statements) => {
-    const indexGenerator = (function *() {
+    const indexGenerator = (function* () {
         let i = 0;
         while (true) {
             yield i;
@@ -295,7 +293,8 @@ const generateCode = (statements) => {
     const flow = (statements: Array<Block | Statement>, start: string, end?: string) => {
         const steps = [start];
         const queue = [];
-        statements.map(i => {
+        let shouldReturn = false;
+        for (const i of statements) {
             if (i instanceof BlockStatement) {
                 if (i instanceof IfStatement) {
                     const name = `node_${indexGenerator.next().value}`;
@@ -316,7 +315,7 @@ const generateCode = (statements) => {
                 }
                 if (i instanceof WhileStatement) {
                     const name = `node_${indexGenerator.next().value}`;
-                    nodes.push(`${name}=>condition: ${i.expression}?`);
+                    nodes.push(`${name}=>condition: ${i.expression || true}?`);
                     queue.push(() => {
                         flow(i.statements, `${name}(yes)`, name);
                         flow([], `${name}(no)`, steps[steps.indexOf(name) + 1])
@@ -326,32 +325,48 @@ const generateCode = (statements) => {
                 if (i instanceof ForStatement) {
                     const nodeName = `node_${indexGenerator.next().value}`;
                     const initialName = `node_${indexGenerator.next().value}`;
-                    nodes.push(`${initialName}=>operation: ${i.expression.initialization}`);
-                    steps.push(`${initialName}`);
-                    nodes.push(`${nodeName}=>condition: ${i.expression.condition}?`);
-                    i.statements.push(i.expression.increment);
+                    const { initialization, condition, increment } = i.expression;
+                    if (initialization) {
+                        nodes.push(`${initialName}=>operation: ${initialization}`);
+                        steps.push(`${initialName}`);
+                    }
+                    if (increment) {
+                        i.statements.push(increment);
+                    }
+                    nodes.push(`${nodeName}=>condition: ${condition || true}?`);
                     queue.push(() => {
                         flow(i.statements, `${nodeName}(yes)`, nodeName);
                         flow([], `${nodeName}(no)`, steps[steps.indexOf(nodeName) + 1])
                     });
                     steps.push(nodeName);
                 }
-            } else {
+            } else if (typeof i === 'string') {
                 const name = `node_${indexGenerator.next().value}`;
-                nodes.push(`${name}=>operation: ${i}`);
-                steps.push(name);
-            }
-        });
+                if (i.match(/^return\s*/)) {
+                    nodes.push(`${name}=>end: ${i}`);
+                    steps.push(name);
+                    shouldReturn = true;
+                    break;
+                } else if (i.match(/^continue\s*/)) {
+                    // todo
+                } else if (i.match(/^break\s*/)) {
 
-        steps.push(end);
+                } else {
+                    nodes.push(`${name}=>operation: ${i}`);
+                    steps.push(name);
+                }
+            }
+        }
+
+        !shouldReturn && steps.push(end);
         queue.map(i => i());
         allSteps.unshift(steps);
     };
-    flow(statements,`start`, `end`);
+    flow(statements, `start`, `end`);
     return `${nodes.join('\n')}\n${allSteps.map(i => i.join('->')).join('\n')}`;
 };
 
-
+// const fs = require('fs');
 // const statements = parser(fs.readFileSync('test/test.c').toString(), 0);
 // fs.writeFileSync('test/output.json', JSON.stringify(statements));
 // const code = generateCode(statements);
