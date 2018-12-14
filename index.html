@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="lib/raphael.min.js"></script>
+    <script src="lib/flowchart.min.js"></script>
+</head>
+<body>
+<div id="diagram"></div>
+<textarea id="c-code" placeholder="c code here" rows="25" cols="100"></textarea>
+<textarea id="flowchart-code" placeholder="flowchart code here" disabled rows="25" cols="100"></textarea>
+<script src="build/main.js"></script>
+<script>
+    const body = document.querySelector('body');
+    cCodeArea.addEventListener('input', () => {
+        const oldDiv = document.querySelector('#diagram');
+        body.removeChild(oldDiv);
+        const div = document.createElement('div');
+        div.id = 'diagram';
+        body.appendChild(div);
+        const diagram = flowchart.parse(flowchartCodeArea.value);
+        diagram.drawSVG('diagram');
+    })
+</script>
+</body>
+</html>

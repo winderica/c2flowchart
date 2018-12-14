@@ -1,0 +1,99 @@
+[
+  {
+    "statements": [
+      {
+        "statements": [
+          {
+            "statements": [
+              "b = 2"
+            ],
+            "type": "for",
+            "expression": {
+              "initialization": "int i = 0",
+              "condition": "i < width",
+              "increment": "i++"
+            }
+          },
+          {
+            "statements": [
+              "b = 3"
+            ],
+            "type": "if",
+            "expression": "234",
+            "elseStatements": [
+              "b = 5"
+            ]
+          }
+        ],
+        "type": "for",
+        "expression": {
+          "initialization": "int i = 0",
+          "condition": "i < width",
+          "increment": "i++"
+        }
+      },
+      {
+        "statements": [
+          {
+            "statements": [
+              "b = 8"
+            ],
+            "type": "for",
+            "expression": {
+              "initialization": "int i = 0",
+              "condition": "i < width",
+              "increment": "i++"
+            }
+          },
+          {
+            "statements": [
+              "b = 9"
+            ],
+            "type": "while",
+            "expression": "123"
+          }
+        ],
+        "type": "for",
+        "expression": {
+          "initialization": "int i = 0",
+          "condition": "i < width",
+          "increment": "i++"
+        }
+      },
+      {
+        "statements": [
+          {
+            "statements": [
+              "b = 21"
+            ],
+            "type": "for",
+            "expression": {
+              "initialization": "int i = 0",
+              "condition": "i < width",
+              "increment": "i++"
+            }
+          },
+          {
+            "statements": [
+              "a = 1"
+            ],
+            "type": "if",
+            "expression": "324"
+          }
+        ],
+        "type": "for",
+        "expression": {
+          "initialization": "int i = 0",
+          "condition": "i < width",
+          "increment": "i++"
+        }
+      }
+    ],
+    "type": "for",
+    "expression": {
+      "initialization": "int i = 0",
+      "condition": "i < width",
+      "increment": "i++"
+    }
+  }
+]

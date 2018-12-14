@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@types/node": "^10.12.11",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.1"
+  },
+  "scripts": {
+    "start": "ts-node src/main.ts",
+    "build": "tsc"
+  }
+}

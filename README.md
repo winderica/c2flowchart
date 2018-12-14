@@ -1,3 +1,3 @@
 # c2flowchart
 
-simple script to convert c code to flowchart
+simple script to convert c code to flowchart, still buggy and ugly
